@@ -23,15 +23,15 @@ base64 = ["bitcoin/base64"]
 
 [dependencies]
 bech32 = { version = "0.11.0", default-features = false }
-bitcoin = { version = "0.32.0", default-features = false }
+bitcoin = { git = "https://github.com/philipr-za/rust-bitcoin.git", branch = "philip-use-latest-secp256k1", default-features = false }
 
 # Do NOT use this as a feature! Use the `serde` feature instead.
 actual-serde = { package = "serde", version = "1.0.103", optional = true }
 
 [dev-dependencies]
 serde_test = "1.0.147"
-bitcoin = { version = "0.32.0", features = ["base64"] }
-secp256k1 = {version = "0.29.0", features = ["rand-std"]}
+bitcoin = { git = "https://github.com/philipr-za/rust-bitcoin.git", branch = "philip-use-latest-secp256k1", features = ["base64"] }
+secp256k1 = { git = "https://github.com/jlest01/rust-secp256k1.git", package = "secp256k1", features = ["rand", "alloc"], rev = "97fb6d1073e9d7abedff71efeeffe6dfd1095a62"}
 
 [[example]]
 name = "htlc"
