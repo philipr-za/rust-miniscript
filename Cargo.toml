@@ -65,6 +65,10 @@ required-features = ["std", "base64"]
 name = "big"
 required-features = ["std", "base64", "compiler"]
 
+[[example]]
+name = "satisfier"
+required-features = ["std", "compiler"]
+
 [workspace]
 members = ["bitcoind-tests", "fuzz"]
 exclude = ["embedded"]
