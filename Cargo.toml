@@ -31,7 +31,7 @@ actual-serde = { package = "serde", version = "1.0.103", optional = true }
 [dev-dependencies]
 serde_test = "1.0.147"
 bitcoin = { git = "https://github.com/philipr-za/rust-bitcoin.git", branch = "philip-use-latest-secp256k1", features = ["base64"] }
-secp256k1 = { git = "https://github.com/rust-bitcoin/rust-secp256k1.git", package = "secp256k1", features = ["rand", "alloc"], rev = "7d8d547b3613f84103feeaa70100ea9c23ffa483"}
+secp256k1 = { git = "https://github.com/philipr-za/rust-secp256k1.git", branch = "philip-explicit-sys-dep", features = ["rand", "alloc"]}
 
 [[example]]
 name = "htlc"
