@@ -729,7 +729,6 @@ mod tests {
 
     fn pubkeys(n: usize) -> Vec<bitcoin::PublicKey> {
         let mut ret = Vec::with_capacity(n);
-        let secp = secp256k1::Secp256k1::new();
         let mut sk = [0; 32];
         for i in 1..n + 1 {
             sk[0] = i as u8;
@@ -738,8 +737,7 @@ mod tests {
 
             let pk = bitcoin::PublicKey {
                 inner: secp256k1::PublicKey::from_secret_key(
-                    &secp,
-                    &secp256k1::SecretKey::from_slice(&sk[..]).expect("secret key"),
+                    &secp256k1::SecretKey::from_secret_bytes(sk).expect("secret key"),
                 ),
                 compressed: true,
             };
@@ -977,12 +975,11 @@ mod tests {
     #[test]
     fn pk_alias() {
         let pubkey = pubkeys(1)[0];
-
         let script: Segwitv0Script = ms_str!("c:pk_k({})", pubkey.to_string());
 
         string_rtt(
             script,
-            "[B/onduesm]pk(PublicKey { compressed: true, inner: PublicKey(aa4c32e50fb34a95a372940ae3654b692ea35294748c3dd2c08b29f87ba9288c8294efcb73dc719e45b91c45f084e77aebc07c1ff3ed8f37935130a36304a340) })",
+            "[B/onduesm]pk(PublicKey { compressed: true, inner: 028c28a97bf8298bc0d23d8c749452a32e694b65e30a9472a3954ab30fe5324caa })",
             "pk(028c28a97bf8298bc0d23d8c749452a32e694b65e30a9472a3954ab30fe5324caa)"
         );
 
@@ -990,7 +987,7 @@ mod tests {
 
         string_rtt(
             script,
-            "[B/onduesm]pk(PublicKey { compressed: true, inner: PublicKey(aa4c32e50fb34a95a372940ae3654b692ea35294748c3dd2c08b29f87ba9288c8294efcb73dc719e45b91c45f084e77aebc07c1ff3ed8f37935130a36304a340) })",
+            "[B/onduesm]pk(PublicKey { compressed: true, inner: 028c28a97bf8298bc0d23d8c749452a32e694b65e30a9472a3954ab30fe5324caa })",
             "pk(028c28a97bf8298bc0d23d8c749452a32e694b65e30a9472a3954ab30fe5324caa)"
         );
 
@@ -998,7 +995,7 @@ mod tests {
 
         string_rtt(
             script,
-            "[B/onufsm]t[V/onfsm]v:[B/onduesm]pk(PublicKey { compressed: true, inner: PublicKey(aa4c32e50fb34a95a372940ae3654b692ea35294748c3dd2c08b29f87ba9288c8294efcb73dc719e45b91c45f084e77aebc07c1ff3ed8f37935130a36304a340) })",
+            "[B/onufsm]t[V/onfsm]v:[B/onduesm]pk(PublicKey { compressed: true, inner: 028c28a97bf8298bc0d23d8c749452a32e694b65e30a9472a3954ab30fe5324caa })",
             "tv:pk(028c28a97bf8298bc0d23d8c749452a32e694b65e30a9472a3954ab30fe5324caa)"
         );
 
@@ -1006,7 +1003,7 @@ mod tests {
 
         string_display_debug_test(
             script,
-            "[B/nduesm]pkh(PublicKey { compressed: true, inner: PublicKey(aa4c32e50fb34a95a372940ae3654b692ea35294748c3dd2c08b29f87ba9288c8294efcb73dc719e45b91c45f084e77aebc07c1ff3ed8f37935130a36304a340) })",
+            "[B/nduesm]pkh(PublicKey { compressed: true, inner: 028c28a97bf8298bc0d23d8c749452a32e694b65e30a9472a3954ab30fe5324caa })",
             "pkh(028c28a97bf8298bc0d23d8c749452a32e694b65e30a9472a3954ab30fe5324caa)",
         );
 
@@ -1014,7 +1011,7 @@ mod tests {
 
         string_display_debug_test(
             script,
-            "[B/nduesm]pkh(PublicKey { compressed: true, inner: PublicKey(aa4c32e50fb34a95a372940ae3654b692ea35294748c3dd2c08b29f87ba9288c8294efcb73dc719e45b91c45f084e77aebc07c1ff3ed8f37935130a36304a340) })",
+            "[B/nduesm]pkh(PublicKey { compressed: true, inner: 028c28a97bf8298bc0d23d8c749452a32e694b65e30a9472a3954ab30fe5324caa })",
             "pkh(028c28a97bf8298bc0d23d8c749452a32e694b65e30a9472a3954ab30fe5324caa)",
         );
 
@@ -1022,7 +1019,7 @@ mod tests {
 
         string_display_debug_test(
             script,
-            "[B/nufsm]t[V/nfsm]v:[B/nduesm]pkh(PublicKey { compressed: true, inner: PublicKey(aa4c32e50fb34a95a372940ae3654b692ea35294748c3dd2c08b29f87ba9288c8294efcb73dc719e45b91c45f084e77aebc07c1ff3ed8f37935130a36304a340) })",
+            "[B/nufsm]t[V/nfsm]v:[B/nduesm]pkh(PublicKey { compressed: true, inner: 028c28a97bf8298bc0d23d8c749452a32e694b65e30a9472a3954ab30fe5324caa })",
             "tv:pkh(028c28a97bf8298bc0d23d8c749452a32e694b65e30a9472a3954ab30fe5324caa)",
         );
     }

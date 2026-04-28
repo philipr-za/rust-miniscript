@@ -57,7 +57,7 @@ impl GetKey for DescriptorSecretKey {
                     .xkey
                     .derive_priv(secp, &descriptor_xkey.derivation_path)
                     .map_err(GetKeyError::Bip32)?;
-                let pk = xpriv.private_key.public_key(secp);
+                let pk = xpriv.private_key.public_key();
 
                 if public_key.inner.eq(&pk) {
                     Ok(Some(xpriv.to_priv()))

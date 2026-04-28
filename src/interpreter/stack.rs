@@ -151,8 +151,10 @@ impl<'txin> Stack<'txin> {
         // TODO: All keys parse errors are currently captured in a single BadPubErr
         // We don't really store information about which key error.
         fn bitcoin_key_from_slice(sl: &[u8], sig_type: SigType) -> Option<BitcoinKey> {
+            let mut key_bytes = [0u8; bitcoin::secp256k1::constants::SCHNORR_PUBLIC_KEY_SIZE];
+            key_bytes.copy_from_slice(&sl[1..=bitcoin::secp256k1::constants::SCHNORR_PUBLIC_KEY_SIZE]);
             let key: BitcoinKey = match sig_type {
-                SigType::Schnorr => bitcoin::key::XOnlyPublicKey::from_slice(sl).ok()?.into(),
+                SigType::Schnorr => bitcoin::key::XOnlyPublicKey::from_byte_array(key_bytes).ok()?.into(),
                 SigType::Ecdsa => bitcoin::PublicKey::from_slice(sl).ok()?.into(),
             };
             Some(key)

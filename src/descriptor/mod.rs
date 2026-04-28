@@ -1246,11 +1246,11 @@ mod tests {
     fn satisfy() {
         let secp = secp256k1::Secp256k1::new();
         let sk =
-            secp256k1::SecretKey::from_slice(&b"sally was a secret key, she said"[..]).unwrap();
-        let pk = bitcoin::PublicKey::new(secp256k1::PublicKey::from_secret_key(&secp, &sk));
+            secp256k1::SecretKey::from_secret_bytes(*b"sally was a secret key, she said").unwrap();
+        let pk = bitcoin::PublicKey::new(secp256k1::PublicKey::from_secret_key(&sk));
         let msg = secp256k1::Message::from_digest_slice(&b"michael was a message, amusingly"[..])
             .expect("32 bytes");
-        let sig = secp.sign_ecdsa(&msg, &sk);
+        let sig = secp.sign_ecdsa(msg, &sk);
         let mut sigser = sig.serialize_der().to_vec();
         sigser.push(0x01); // sighash_all
 

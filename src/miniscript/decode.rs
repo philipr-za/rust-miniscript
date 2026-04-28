@@ -6,6 +6,7 @@
 //!
 
 use core::fmt;
+use std::convert::TryInto;
 #[cfg(feature = "std")]
 use std::error;
 
@@ -36,7 +37,10 @@ impl ParseableKey for bitcoin::PublicKey {
 
 impl ParseableKey for bitcoin::secp256k1::XOnlyPublicKey {
     fn from_slice(sl: &[u8]) -> Result<Self, KeyParseError> {
-        bitcoin::secp256k1::XOnlyPublicKey::from_slice(sl)
+        let key_bytes: [u8; bitcoin::secp256k1::constants::SCHNORR_PUBLIC_KEY_SIZE] = sl
+            .try_into()
+            .map_err(|_| KeyParseError::XonlyKeyParseError(bitcoin::secp256k1::Error::InvalidPublicKey))?;
+        bitcoin::secp256k1::XOnlyPublicKey::from_byte_array(key_bytes)
             .map_err(KeyParseError::XonlyKeyParseError)
     }
 }

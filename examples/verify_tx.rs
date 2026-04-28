@@ -89,7 +89,7 @@ fn main() {
         let (pk, ecdsa_sig) = key_sig.as_ecdsa().expect("Ecdsa Sig");
         ecdsa_sig.sighash_type == bitcoin::sighash::EcdsaSighashType::All
             && secp
-                .verify_ecdsa(&message, &ecdsa_sig.signature, &pk.inner)
+                .verify_ecdsa(message, &ecdsa_sig.signature, &pk.inner)
                 .is_ok()
     }));
 
