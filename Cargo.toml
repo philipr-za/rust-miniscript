@@ -23,14 +23,14 @@ base64 = ["bitcoin/base64"]
 
 [dependencies]
 bech32 = { version = "0.11.0", default-features = false }
-bitcoin = { git = "https://github.com/Blockstream/rust-bitcoin.git", branch = "use-secp256k1-0.32.0-beta.2", default-features = false }
+bitcoin = { git = "https://github.com/philipr-za/rust-bitcoin.git", branch = "use-secp256k1-0.32.0.beta.2-on-0.32.102", default-features = false }
 
 # Do NOT use this as a feature! Use the `serde` feature instead.
 actual-serde = { package = "serde", version = "1.0.103", optional = true }
 
 [dev-dependencies]
 serde_test = "1.0.147"
-bitcoin = { git = "https://github.com/Blockstream/rust-bitcoin.git", branch = "use-secp256k1-0.32.0-beta.2", features = ["base64"] }
+bitcoin = { git = "https://github.com/philipr-za/rust-bitcoin.git", branch = "use-secp256k1-0.32.0.beta.2-on-0.32.102", features = ["base64"] }
 secp256k1 = {version = "0.32.0-beta.2", features = ["std", "rand"]}
 
 [[example]]
