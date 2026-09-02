@@ -541,7 +541,7 @@ impl DescriptorPublicKey {
                         SinglePubKey::FullKey(pk) => {
                             pk.write_into(&mut engine).expect("engines don't error")
                         }
-                        SinglePubKey::XOnly(x_only_pk) => engine.input(&x_only_pk.serialize()),
+                        SinglePubKey::XOnly(x_only_pk) => engine.input(&x_only_pk.to_byte_array()),
                     };
                     bip32::Fingerprint::from(
                         &XKeyIdentifier::from_engine(engine)[..4]

@@ -238,7 +238,7 @@ pub trait ToPublicKey: MiniscriptKey {
     fn to_pubkeyhash(&self, sig_type: SigType) -> hash160::Hash {
         match sig_type {
             SigType::Ecdsa => hash160::Hash::hash(&self.to_public_key().to_bytes()),
-            SigType::Schnorr => hash160::Hash::hash(&self.to_x_only_pubkey().serialize()),
+            SigType::Schnorr => hash160::Hash::hash(&self.to_x_only_pubkey().to_byte_array()),
         }
     }
 
@@ -284,7 +284,7 @@ impl ToPublicKey for bitcoin::secp256k1::XOnlyPublicKey {
         // This code should never be used.
         // But is implemented for completeness
         let mut data: Vec<u8> = vec![0x02];
-        data.extend(self.serialize().iter());
+        data.extend(self.to_byte_array().iter());
         bitcoin::PublicKey::from_slice(&data)
             .expect("Failed to construct 33 Publickey from 0x02 appended x-only key")
     }

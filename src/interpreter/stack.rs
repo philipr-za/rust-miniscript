@@ -3,6 +3,8 @@
 
 //! Interpreter stack
 
+use core::convert::TryFrom;
+
 use bitcoin::blockdata::{opcodes, script};
 use bitcoin::hashes::{hash160, ripemd160, sha256, Hash};
 use bitcoin::{absolute, relative, Sequence};
@@ -152,7 +154,10 @@ impl<'txin> Stack<'txin> {
         // We don't really store information about which key error.
         fn bitcoin_key_from_slice(sl: &[u8], sig_type: SigType) -> Option<BitcoinKey> {
             let key: BitcoinKey = match sig_type {
-                SigType::Schnorr => bitcoin::key::XOnlyPublicKey::from_slice(sl).ok()?.into(),
+                SigType::Schnorr => {
+                    let bytes = <[u8; 32]>::try_from(sl).ok()?;
+                    bitcoin::key::XOnlyPublicKey::from_byte_array(bytes).ok()?.into()
+                }
                 SigType::Ecdsa => bitcoin::PublicKey::from_slice(sl).ok()?.into(),
             };
             Some(key)

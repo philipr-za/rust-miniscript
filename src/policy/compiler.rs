@@ -1212,7 +1212,6 @@ mod tests {
 
     fn pubkeys_and_a_sig(n: usize) -> (Vec<bitcoin::PublicKey>, secp256k1::ecdsa::Signature) {
         let mut ret = Vec::with_capacity(n);
-        let secp = secp256k1::Secp256k1::new();
         let mut sk = [0; 32];
         for i in 1..n + 1 {
             sk[0] = i as u8;
@@ -1221,16 +1220,15 @@ mod tests {
 
             let pk = bitcoin::PublicKey {
                 inner: secp256k1::PublicKey::from_secret_key(
-                    &secp,
-                    &secp256k1::SecretKey::from_slice(&sk[..]).expect("sk"),
+                    &secp256k1::SecretKey::from_secret_bytes(sk).expect("sk"),
                 ),
                 compressed: true,
             };
             ret.push(pk);
         }
-        let sig = secp.sign_ecdsa(
-            &secp256k1::Message::from_digest(sk), // Not a digest but 32 bytes nonetheless.
-            &secp256k1::SecretKey::from_slice(&sk[..]).expect("secret key"),
+        let sig = secp256k1::ecdsa::sign(
+            secp256k1::Message::from_digest(sk), // Not a digest but 32 bytes nonetheless.
+            &secp256k1::SecretKey::from_secret_bytes(sk).expect("secret key"),
         );
         (ret, sig)
     }

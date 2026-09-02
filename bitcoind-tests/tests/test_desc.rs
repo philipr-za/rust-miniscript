@@ -167,7 +167,7 @@ pub fn test_desc_satisfy(
             if let Some(internal_keypair) = internal_keypair {
                 // ---------------------- Tr key spend --------------------
                 let internal_keypair = internal_keypair
-                    .add_xonly_tweak(&secp, &tr.spend_info().tap_tweak().to_scalar())
+                    .add_xonly_tweak(&tr.spend_info().tap_tweak().to_scalar())
                     .expect("Tweaking failed");
                 let sighash_msg = sighash_cache
                     .taproot_key_spend_signature_hash(0, &prevouts, sighash_type)
@@ -176,7 +176,7 @@ pub fn test_desc_satisfy(
                 let mut aux_rand = [0u8; 32];
                 rand::thread_rng().fill_bytes(&mut aux_rand);
                 let schnorr_sig =
-                    secp.sign_schnorr_with_aux_rand(&msg, &internal_keypair, &aux_rand);
+                    secp256k1::schnorr::sign_with_aux_rand(msg.as_ref(), &internal_keypair, &aux_rand);
                 psbt.inputs[0].tap_key_sig =
                     Some(taproot::Signature { signature: schnorr_sig, sighash_type });
             } else {
@@ -200,7 +200,8 @@ pub fn test_desc_satisfy(
                 let msg = secp256k1::Message::from_digest(sighash_msg.to_byte_array());
                 let mut aux_rand = [0u8; 32];
                 rand::thread_rng().fill_bytes(&mut aux_rand);
-                let signature = secp.sign_schnorr_with_aux_rand(&msg, &keypair, &aux_rand);
+                let signature =
+                    secp256k1::schnorr::sign_with_aux_rand(msg.as_ref(), &keypair, &aux_rand);
                 let x_only_pk =
                     x_only_pks[xonly_keypairs.iter().position(|&x| x == keypair).unwrap()];
                 psbt.inputs[0]
@@ -251,9 +252,9 @@ pub fn test_desc_satisfy(
 
             // Finally construct the signature and add to psbt
             for sk in sks_reqd {
-                let signature = secp.sign_ecdsa(&msg, &sk);
+                let signature = secp256k1::ecdsa::sign(msg, &sk);
                 let pk = pks[sks.iter().position(|&x| x == sk).unwrap()];
-                assert!(secp.verify_ecdsa(&msg, &signature, &pk.inner).is_ok());
+                assert!(secp256k1::ecdsa::verify(&signature, msg, &pk.inner).is_ok());
                 psbt.inputs[0]
                     .partial_sigs
                     .insert(pk, ecdsa::Signature { signature, sighash_type });
@@ -312,7 +313,7 @@ fn find_sks_ms<Ctx: ScriptContext>(
         .iter_pk()
         .filter_map(|pk| {
             let i = pks.iter().position(|&x| x.to_public_key() == pk);
-            i.map(|idx| (sks[idx]))
+            i.map(|idx| sks[idx])
         })
         .collect();
     sks

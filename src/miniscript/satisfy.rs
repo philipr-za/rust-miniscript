@@ -645,7 +645,7 @@ impl<Pk: MiniscriptKey + ToPublicKey> Placeholder<Pk> {
         match self {
             Placeholder::Pubkey(pk, size) => {
                 if *size == 33 {
-                    Some(pk.to_x_only_pubkey().serialize().to_vec())
+                    Some(pk.to_x_only_pubkey().to_byte_array().to_vec())
                 } else {
                     Some(pk.to_public_key().to_bytes())
                 }

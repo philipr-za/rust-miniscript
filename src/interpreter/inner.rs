@@ -1,6 +1,8 @@
 // Written in 2019 by Sanket Kanjular and Andrew Poelstra
 // SPDX-License-Identifier: CC0-1.0
 
+use core::convert::TryFrom;
+
 use bitcoin::hashes::{hash160, sha256, Hash};
 use bitcoin::taproot::{ControlBlock, TAPROOT_ANNEX_PREFIX};
 use bitcoin::Witness;
@@ -191,7 +193,9 @@ pub(super) fn from_txdata<'txin>(
         if !ssig_stack.is_empty() {
             Err(Error::NonEmptyScriptSig)
         } else {
-            let output_key = bitcoin::key::XOnlyPublicKey::from_slice(spk[2..].as_bytes())
+            let key_bytes = <[u8; 32]>::try_from(spk[2..].as_bytes())
+                .map_err(|_| Error::XOnlyPublicKeyParseError)?;
+            let output_key = bitcoin::key::XOnlyPublicKey::from_byte_array(key_bytes)
                 .map_err(|_| Error::XOnlyPublicKeyParseError)?;
             let has_annex = wit_stack
                 .last()

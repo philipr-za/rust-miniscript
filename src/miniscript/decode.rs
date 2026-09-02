@@ -5,6 +5,7 @@
 //! Functionality to parse a Bitcoin Script into a `Miniscript`
 //!
 
+use core::convert::TryFrom;
 use core::fmt;
 #[cfg(feature = "std")]
 use std::error;
@@ -36,7 +37,10 @@ impl ParseableKey for bitcoin::PublicKey {
 
 impl ParseableKey for bitcoin::secp256k1::XOnlyPublicKey {
     fn from_slice(sl: &[u8]) -> Result<Self, KeyParseError> {
-        bitcoin::secp256k1::XOnlyPublicKey::from_slice(sl)
+        let bytes = <[u8; 32]>::try_from(sl).map_err(|_| {
+            KeyParseError::XonlyKeyParseError(bitcoin::secp256k1::Error::InvalidPublicKey)
+        })?;
+        bitcoin::secp256k1::XOnlyPublicKey::from_byte_array(bytes)
             .map_err(KeyParseError::XonlyKeyParseError)
     }
 }

@@ -1162,22 +1162,17 @@ mod test {
     fn test_plan_satisfy_wsh() {
         use std::collections::BTreeMap;
 
-        use bitcoin::secp256k1::{self, Secp256k1};
+        use bitcoin::secp256k1;
 
-        let secp = Secp256k1::new();
-
-        let sk =
-            secp256k1::SecretKey::from_slice(&b"sally was a secret key, she said"[..]).unwrap();
-        let pk = bitcoin::PublicKey::new(secp256k1::PublicKey::from_secret_key(&secp, &sk));
+        let sk = secp256k1::SecretKey::from_secret_bytes(*b"sally was a secret key, she said").unwrap();
+        let pk = bitcoin::PublicKey::new(secp256k1::PublicKey::from_secret_key(&sk));
 
         let desc =
             Descriptor::<DefiniteDescriptorKey>::from_str(&format!("wsh(pk({}))", pk)).unwrap();
 
-        let sighash =
-            secp256k1::Message::from_digest_slice(&b"michael was a message, amusingly"[..])
-                .expect("32 bytes");
+        let sighash = secp256k1::Message::from_digest(*b"michael was a message, amusingly");
         let ecdsa_sig = bitcoin::ecdsa::Signature {
-            signature: secp.sign_ecdsa(&sighash, &sk),
+            signature: secp256k1::ecdsa::sign(sighash, &sk),
             sighash_type: bitcoin::sighash::EcdsaSighashType::All,
         };
 
@@ -1204,21 +1199,17 @@ mod test {
     fn test_plan_satisfy_sh_wsh() {
         use std::collections::BTreeMap;
 
-        use bitcoin::secp256k1::{self, Secp256k1};
+        use bitcoin::secp256k1;
 
-        let secp = Secp256k1::new();
-        let sk =
-            secp256k1::SecretKey::from_slice(&b"sally was a secret key, she said"[..]).unwrap();
-        let pk = bitcoin::PublicKey::new(secp256k1::PublicKey::from_secret_key(&secp, &sk));
+        let sk = secp256k1::SecretKey::from_secret_bytes(*b"sally was a secret key, she said").unwrap();
+        let pk = bitcoin::PublicKey::new(secp256k1::PublicKey::from_secret_key(&sk));
 
         let desc =
             Descriptor::<DefiniteDescriptorKey>::from_str(&format!("sh(wsh(pk({})))", pk)).unwrap();
 
-        let sighash =
-            secp256k1::Message::from_digest_slice(&b"michael was a message, amusingly"[..])
-                .expect("32 bytes");
+        let sighash = secp256k1::Message::from_digest(*b"michael was a message, amusingly");
         let ecdsa_sig = bitcoin::ecdsa::Signature {
-            signature: secp.sign_ecdsa(&sighash, &sk),
+            signature: secp256k1::ecdsa::sign(sighash, &sk),
             sighash_type: bitcoin::sighash::EcdsaSighashType::All,
         };
 
